@@ -102,85 +102,93 @@ var _utils2 = _interopRequireDefault(_utils);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var canvas = document.querySelector('canvas');
-var c = canvas.getContext('2d');
+var canvas = document.querySelector("canvas");
+var c = canvas.getContext("2d");
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
 var mouse = {
-    x: innerWidth / 2,
-    y: innerHeight / 2
+  x: innerWidth / 2,
+  y: innerHeight / 2
 };
 
-var colors = ['#2185C5', '#7ECEFD', '#FFF6E5', '#FF7F66'];
+var colors = ["#2185C5", "#7ECEFD", "#FFF6E5", "#FF7F66"];
 
 // Event Listeners
-addEventListener('mousemove', function (event) {
-    mouse.x = event.clientX;
-    mouse.y = event.clientY;
+addEventListener("mousemove", function (event) {
+  mouse.x = event.clientX;
+  mouse.y = event.clientY;
 });
 
-addEventListener('resize', function () {
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
+addEventListener("resize", function () {
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
 
-    init();
+  init();
 });
 
 // Objects
 function Object(x, y, radius, color) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
+  this.x = x;
+  this.y = y;
+  this.radius = radius;
+  this.color = color;
 }
 
 Object.prototype.draw = function () {
+  c.beginPath();
+  c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+  c.fillStyle = this.color;
+  c.fill();
+  c.closePath();
+};
+
+Object.prototype.update = function () {
+  this.draw();
+};
+
+function Circle(x, y, radius, color) {
+  this.x = x;
+  this.y = y;
+  this.radius = radius;
+  this.color = color;
+  this.update = function () {
+    this.draw();
+  };
+  this.draw = function () {
     c.beginPath();
     c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
     c.fillStyle = this.color;
     c.fill();
     c.closePath();
-};
-
-Object.prototype.update = function () {
-    this.draw();
-};
-
-function Circle(x, y, radius, color) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
-    this.update = function () {
-        this.draw();
-    };
-    this.draw = function () {
-        c.beginPath();
-        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        c.fillStyle = this.color;
-        c.fill();
-        c.closePath();
-    };
+  };
 }
 
 // Implementation
 var circle1 = void 0;
 var circle2 = void 0;
 function init() {
-    circle1 = new Circle(300, 300, 100, 'black');
-    circle2 = new Circle(undefined, undefined, 30, 'red');
+  circle1 = new Circle(300, 300, 100, "black");
+  circle2 = new Circle(10, 10, 30, "red");
 }
 
 // Animation Loop
 function animate() {
-    requestAnimationFrame(animate);
-    c.clearRect(0, 0, canvas.width, canvas.height);
-    circle1.update();
-    circle2.x = mouse.x;
-    circle2.y = mouse.y;
-    circle2.update();
+  requestAnimationFrame(animate);
+  c.clearRect(0, 0, canvas.width, canvas.height);
+  circle1.update();
+  circle2.x = mouse.x;
+  circle2.y = mouse.y;
+  circle2.update();
+
+  if (_utils2.default.distance(circle1.x, circle1.y, mouse.x, mouse.y) < circle1.radius + circle2.radius) {
+    circle1.color = 'red';
+  } else {
+    circle1.color = 'black';
+  }
+
+  console.log();
 }
 
 init();
